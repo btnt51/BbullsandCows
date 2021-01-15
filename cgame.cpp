@@ -27,6 +27,32 @@ QString CGame::turn(QString Number)
 
 }
 
+QString CGame::loadGame()
+{
+    QFile file("D:\\lastGame.txt");
+    QString result;
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&file);
+        int c = 0;
+        //in.setCodec("UTF-8");
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            if(c == 0)
+                this->number = line;
+            else if(c == 1)
+                this->countTurns = line.toInt();
+            else
+                result.append(line+"\n");
+            c++;
+        }
+//        qDebug() << result;
+    }
+    file.close();
+    return result;
+}
+
 void CGame::generateNumber()
 {
     int NUMBER{};
@@ -51,4 +77,35 @@ void CGame::generateNumber()
             k = 0;
         }
     }
+}
+
+void CGame::saveGame(QString str)
+{
+    QFile file("D:\\lastGame.txt");
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        file.write(number.toUtf8());
+        qDebug() << number;
+        file.write("\n"+QString::number(countTurns).toUtf8());
+        file.write("\n");
+        qDebug() << "O4ko mangysta! Tbi popal";
+        file.write(str.toUtf8());
+        qDebug() << str;
+    }
+    file.close();
+}
+
+void CGame::startingGame()
+{
+    this->setIsNewGame(true);
+    this->setIsRun(true);
+    this->generateNumber();
+}
+
+void CGame::pauseGame()
+{
+    if(this->getIsRun()==true)
+        this->setIsRun(false);
+    else
+        this->setIsRun(true);
 }

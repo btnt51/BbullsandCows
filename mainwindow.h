@@ -20,11 +20,12 @@ private slots:
     void saveGame();
     void loadGame();
     void on_pushButton_clicked();
-    void newGame();
+    void newGame(bool t = true);
+    void pGame();
+
 
 private:
     Ui::MainWindow *ui;
     CGame game;
-    int pauseFlag();
 };
 #endif // MAINWINDOW_H
