@@ -60,23 +60,30 @@ void CGame::generateNumber()
     std::uniform_int_distribution<int> uid(1111,9999);
     NUMBER = uid(gen);
     number.append(QString::number(NUMBER));
-    int t{};
-    for(int k = 0; k <= 9;k++)
-    {
-        for(int j = 0; j < 4;j++)
-        {
-            if(number[j] == k)
-                t++;
-            if(t == 2)
-                break;
-        }
-        if(t == 2)
-        {
-            NUMBER = uid(gen);
-            number.append(QString::number(NUMBER));
-            k = 0;
-        }
-    }
+          bool isNumberCondition =!((number[0]==number[1]||number[0]==number[2]||number[0]==number[3])||
+                  (number[1]==number[2]|| number[1]==number[3])||
+                  number[2]==number[3]);
+          while (isNumberCondition){
+              NUMBER = uid(gen);
+              number.append(QString::number(NUMBER));
+          }
+//    int t{};
+//    for(int k = 0; k <= 9;k++)
+//    {
+//        for(int j = 0; j < 4;j++)
+//        {
+//            if(number[j] == k)
+//                t++;
+//            if(t == 2)
+//                break;
+//        }
+//        if(t == 2)
+//        {
+//            NUMBER = uid(gen);
+//            number.append(QString::number(NUMBER));
+//            k = 0;
+//        }
+//    }
 }
 
 void CGame::saveGame(QString str)
