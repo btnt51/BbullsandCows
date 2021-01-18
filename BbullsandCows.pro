@@ -10,14 +10,17 @@ CONFIG += c++17
 
 SOURCES += \
     cgame.cpp \
+    howtoplay.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     cgame.h \
+    howtoplay.h \
     mainwindow.h
 
 FORMS += \
+    howtoplay.ui \
     mainwindow.ui
 
 # Default rules for deployment.

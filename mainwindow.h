@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <cgame.h>
+#include "howtoplay.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,10 +23,16 @@ private slots:
     void on_pushButton_clicked();
     void newGame(bool t = true);
     void pGame();
+    void setStats(bool t = true);
+    void setDarkTheme();
+    void setLightTheme();
+    void openHelp();
 
 
 private:
     Ui::MainWindow *ui;
     CGame game;
+    QWidget * widget;
+    howToPlay * hwt;
 };
 #endif // MAINWINDOW_H

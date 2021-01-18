@@ -53,30 +53,48 @@ QString CGame::loadGame()
     return result;
 }
 
+QString CGame::loadStats()
+{
+    QFile file("D:\\statsBullsAndCows.txt");
+    QString result;
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result = file.readLine();
+        qDebug() << result;
+    }
+    file.close();
+    int index = result.indexOf("_");
+    QString  totalGames;
+    for(int i = 0; i < index;i++)
+        totalGames += result[i];
+    QString minTurns;
+    index++;
+    for(int i = index; i < result.length();i++)
+        minTurns += result[i];
+    this->minCountTurns = minTurns.toInt();
+    this->totalGames = totalGames.toInt();
+    return result;
+}
+
 void CGame::generateNumber()
 {
-    int NUMBER{};
-    std::mt19937 gen(time(nullptr));
-    std::uniform_int_distribution<int> uid(1111,9999);
-    NUMBER = uid(gen);
-    number.append(QString::number(NUMBER));
-    int t{};
-    for(int k = 0; k <= 9;k++)
+
+    std::mt19937 gen(time(nullptr)*this->totalGames);
+    std::uniform_int_distribution<int> uid(1000,9999);
+    while(true)
     {
-        for(int j = 0; j < 4;j++)
-        {
-            if(number[j] == k)
-                t++;
-            if(t == 2)
-                break;
-        }
-        if(t == 2)
-        {
-            NUMBER = uid(gen);
-            number.append(QString::number(NUMBER));
-            k = 0;
-        }
+        number.clear();
+        int Number = uid(gen);
+        number.append(QString::number(Number));
+        bool isNumberCondition =(number[0] == number[1]
+                || number[0] == number[2] || number[0] == number[3]
+                || number[1] == number[2] || number[1] == number[3]
+                || number[2] == number[3]);
+        if(isNumberCondition)
+            number.clear();
+        else break;
     }
+    qDebug() << number;
 }
 
 void CGame::saveGame(QString str)
@@ -92,6 +110,15 @@ void CGame::saveGame(QString str)
         file.write(str.toUtf8());
         qDebug() << str;
     }
+    file.close();
+}
+
+void CGame::saveStats()
+{
+    QFile file("D:\\statsBullsAndCows.txt");
+    QString result = QString::number(this->totalGames)+"_"+QString::number(this->minCountTurns);
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+        file.write(result.toUtf8());
     file.close();
 }
 

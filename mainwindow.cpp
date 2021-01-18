@@ -6,11 +6,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QWidget * widget = new QWidget();
+    widget = new QWidget();
     widget->setLayout(ui->gridLayout);
     ui->textEdit->setReadOnly(true);
     setCentralWidget(widget);
     setWindowTitle("Bulls and cows");
+    hwt = new howToPlay();
     ui->textEdit->setPlaceholderText("If u want to start a new game use shortcut CTRL+N or trigger in menu "
                                     "\"GAME\"\\\"new game\" \n"
                                     "If u want to load your previous game trigger in "
@@ -25,12 +26,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionPause_game, SIGNAL(triggered()), &game, SLOT(pauseGame()));
     connect(ui->actionPause_game, SIGNAL(triggered()), this, SLOT(pGame()));
     connect(ui->actionPause_game, SIGNAL(triggered()), this, SLOT(saveGame()));
+    connect(ui->actionDark_theme, SIGNAL(triggered()), this, SLOT(setDarkTheme()));
+    connect(ui->actionLight_theme, SIGNAL(triggered()), this, SLOT(setLightTheme()));
+    connect(ui->actionHow_to_play, SIGNAL(triggered()), this, SLOT(openHelp()));
+    connect(&game, SIGNAL(valueChanged()), this, SLOT(setStats()));
+    setStats(false);
     pGame();
 }
 
 MainWindow::~MainWindow()
 {
+    game.saveStats();
     delete ui;
+    delete widget;
+    delete hwt;
 }
 
 
@@ -42,9 +51,6 @@ void MainWindow::saveGame()
 void MainWindow::loadGame()
 {
     QString str = game.loadGame();
-
-    //qDebug() << str;
-    //ui->textEdit->clear();
     ui->textEdit->append(str);
     game.setIsRun(true);
     newGame(false);
@@ -60,6 +66,7 @@ void MainWindow::on_pushButton_clicked()
 
         if(game.isWin(ui->lineEdit->text()))
         {
+            game.checkstas();
             ui->textEdit->append(ui->lineEdit->text()+" Is right number. You win!");
             game.setIsRun(false);
 
@@ -95,4 +102,66 @@ void MainWindow::pGame()
     else
         newGame(false);
 
+}
+
+void MainWindow::setStats(bool t)
+{
+    if(t)
+    {
+        ui->minimalTurns->setText("Minimal turns "+ QString::number(game.getMinTurns()));
+        ui->countsOfGames->setText("Total games played " + QString::number(game.getTotalGames()));
+    }
+    else
+    {
+        QString str = game.loadStats();
+        int index = str.indexOf("_");
+        QString  totalGames;
+        for(int i = 0; i < index;i++)
+            totalGames += str[i];
+        QString minTurns;
+        index++;
+        for(int i = index; i < str.length();i++)
+            minTurns += str[i];
+        ui->minimalTurns->setText("Minimal turns "+minTurns);
+        ui->countsOfGames->setText("Total games played " + totalGames);
+    }
+}
+
+void MainWindow::setDarkTheme()
+{
+    hwt->setDarkTheme();
+    ui->statusbar->setStyleSheet("background-color:rgb(46, 52, 54)");                   //цветовая тема для отображаемых окон
+    widget->setStyleSheet("background-color:rgb(46, 52, 54)");
+    this->setStyleSheet("background-color:rgb(46, 52, 54)");
+    ui->textEdit->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->lineEdit->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->pushButton->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->menubar->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->menuMenu->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->menuGame->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->menuHelp->setStyleSheet("background-color:rgb(85, 87, 83); color:white");
+    ui->minimalTurns->setStyleSheet("color:white");
+    ui->countsOfGames->setStyleSheet("color:white");
+}
+
+void MainWindow::setLightTheme()
+{
+    hwt->setLightTheme();
+    ui->statusbar->setStyleSheet("");
+    widget->setStyleSheet("");
+    this->setStyleSheet("");
+    ui->lineEdit->setStyleSheet("");
+    ui->textEdit->setStyleSheet("");
+    ui->pushButton->setStyleSheet("");
+    ui->menubar->setStyleSheet("");
+    ui->menuMenu->setStyleSheet("");
+    ui->menuGame->setStyleSheet("");
+    ui->menuHelp->setStyleSheet("");
+    ui->minimalTurns->setStyleSheet("");
+    ui->countsOfGames->setStyleSheet("");
+}
+
+void MainWindow::openHelp()
+{
+    hwt->show();
 }
